@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     # ===== 第三方应用 =====
     "rest_framework",       # Django REST Framework - 构建 API
     "corsheaders",          # 跨域支持
+    # ===== 自定义应用 =====
+    "players",              # 玩家管理模块
 ]
 
 # ============================================
