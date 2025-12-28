@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # ===== 第三方应用 =====
-    "rest_framework",       # Django REST Framework - 构建 API
-    "corsheaders",          # 跨域支持
+    "rest_framework",               # Django REST Framework - 构建 API
+    "rest_framework_simplejwt",     # JWT 身份验证
+    "corsheaders",                  # 跨域支持
     # ===== 自定义应用 =====
     "players",              # 玩家管理模块
     "mails",                # 邮件补偿模块
@@ -117,12 +118,31 @@ CORS_ALLOW_ALL_ORIGINS = True
 # ============================================
 
 REST_FRAMEWORK = {
+    # 默认认证方式: JWT
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    # 默认权限: 必须登录 (白名单接口单独设置 AllowAny)
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",  # 开发阶段允许所有请求
+        "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",  # 保留 DRF 浏览界面
     ],
+}
+
+# ============================================
+# 🔐 JWT 配置
+# ============================================
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),   # Access Token 有效期: 24小时
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),    # Refresh Token 有效期: 7天
+    "ROTATE_REFRESH_TOKENS": True,                  # 刷新时轮换 Refresh Token
+    "BLACKLIST_AFTER_ROTATION": True,               # 轮换后旧 Token 加入黑名单
+    "AUTH_HEADER_TYPES": ("Bearer",),               # Header 格式: Bearer <token>
 }
 
 
