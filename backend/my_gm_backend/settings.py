@@ -126,10 +126,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    # 渲染器: 统一响应格式
     "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
+        "utils.renderers.UnifiedResponseRenderer",  # 统一响应格式
         "rest_framework.renderers.BrowsableAPIRenderer",  # 保留 DRF 浏览界面
     ],
+    # 全局异常处理器
+    "EXCEPTION_HANDLER": "utils.exception_handler.custom_exception_handler",
 }
 
 # ============================================
