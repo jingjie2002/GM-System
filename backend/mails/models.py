@@ -1,6 +1,11 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
+from django.utils import timezone
 from players.models import Player
+import logging
+
+# 配置日志
+logger = logging.getLogger(__name__)
 
 
 class Mail(models.Model):
@@ -97,3 +102,67 @@ class Mail(models.Model):
         if self.is_global:
             return f"[全服] {self.title}"
         return f"[私人] {self.title} -> {self.receiver}"
+    
+    # ========== 业务逻辑方法 ==========
+    
+    def claim_attachment(self):
+        """
+        领取邮件附件 - 核心业务逻辑
+        
+        使用 transaction.atomic() 保证数据一致性:
+        - 玩家道具增加 和 邮件状态更新 要么同时成功，要么同时回滚
+        - 防止"金币加了但邮件没标记已领取"的问题
+        
+        Returns:
+            tuple: (success: bool, message: str)
+                - success: 是否领取成功
+                - message: 结果描述信息
+        """
+        # ===== 1. 验证：全服邮件暂不支持 =====
+        if self.is_global:
+            return False, "全服邮件需单独处理，暂不支持批量领取"
+        
+        # ===== 2. 验证：必须有接收者 =====
+        if not self.receiver:
+            return False, "邮件没有指定接收者"
+        
+        # ===== 3. 验证：是否已领取 =====
+        if self.is_claimed:
+            return False, "邮件已被领取"
+        
+        # ===== 4. 验证：是否已过期 =====
+        if self.expires_at <= timezone.now():
+            return False, "邮件已过期"
+        
+        # ===== 5. 原子事务：领取道具 =====
+        # transaction.atomic() 确保以下操作要么全部成功，要么全部回滚
+        with transaction.atomic():
+            player = self.receiver
+            item_name = None
+            
+            # 根据 item_id 分发道具
+            if self.item_id == 1:  # 金币
+                player.gold += self.item_count
+                player.save(update_fields=['gold'])  # 只更新 gold 字段，效率更高
+                item_name = f"金币 x{self.item_count}"
+                
+            elif self.item_id == 2:  # 钻石
+                player.diamond += self.item_count
+                player.save(update_fields=['diamond'])
+                item_name = f"钻石 x{self.item_count}"
+                
+            elif self.item_id is not None:
+                # 其他道具类型暂未实现，记录日志但不报错
+                logger.warning(f"[邮件领取] 未实现的道具类型: item_id={self.item_id}, mail_id={self.id}")
+                item_name = f"未知道具(ID:{self.item_id}) x{self.item_count}"
+            
+            # 标记邮件为已领取
+            self.is_claimed = True
+            self.save(update_fields=['is_claimed'])
+        
+        # 构建成功消息
+        if item_name:
+            return True, f"领取成功！玩家 [{player.nickname}] 获得 {item_name}"
+        else:
+            return True, f"领取成功！邮件无附件道具"
+

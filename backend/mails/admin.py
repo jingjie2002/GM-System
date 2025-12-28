@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import Mail
 
 
@@ -11,6 +11,7 @@ class MailAdmin(admin.ModelAdmin):
     1. 列表页显示关键字段，支持过滤和搜索
     2. 编辑页分组展示字段，提升用户体验
     3. 保存时自动将当前登录管理员设置为 sender
+    4. 自定义 Action: 批量领取邮件附件
     """
     
     # ========== 列表页配置 ==========
@@ -33,6 +34,9 @@ class MailAdmin(admin.ModelAdmin):
     # 只读字段（sender 自动填充，不可手动修改）
     readonly_fields = ['sender', 'created_at']
     
+    # ========== 自定义 Actions ==========
+    actions = ['claim_attachments_action']
+    
     # ========== 编辑页字段分组 ==========
     fieldsets = (
         ('📧 邮件内容', {
@@ -45,7 +49,7 @@ class MailAdmin(admin.ModelAdmin):
         ('🎁 道具附件', {
             'fields': ('item_id', 'item_count'),
             'classes': ('collapse',),  # 默认折叠
-            'description': '💡 预留字段，用于后续扩展道具补偿功能'
+            'description': '💡 道具ID: 1=金币, 2=钻石'
         }),
         ('⏰ 邮件状态', {
             'fields': ('expires_at', 'is_claimed')
@@ -70,3 +74,47 @@ class MailAdmin(admin.ModelAdmin):
         if not change:  # 仅在创建新邮件时设置
             obj.sender = request.user
         super().save_model(request, obj, form, change)
+    
+    # ========== 自定义 Action: 处理并领取附件 ==========
+    
+    @admin.action(description="🎁 处理并领取附件")
+    def claim_attachments_action(self, request, queryset):
+        """
+        批量领取邮件附件的 Admin Action
+        
+        使用方法:
+        1. 在邮件列表页勾选要领取的邮件
+        2. 在"动作"下拉菜单中选择"🎁 处理并领取附件"
+        3. 点击"执行"按钮
+        
+        Args:
+            request: HTTP 请求对象
+            queryset: 选中的邮件 QuerySet
+        """
+        success_count = 0
+        fail_messages = []
+        
+        # 遍历选中的邮件，逐个调用领取方法
+        for mail in queryset:
+            success, msg = mail.claim_attachment()
+            if success:
+                success_count += 1
+            else:
+                fail_messages.append(f"[{mail.title}]: {msg}")
+        
+        # 显示成功消息
+        if success_count:
+            self.message_user(
+                request, 
+                f"✅ 成功领取 {success_count} 封邮件的附件", 
+                messages.SUCCESS
+            )
+        
+        # 显示失败消息
+        if fail_messages:
+            self.message_user(
+                request, 
+                f"⚠️ 以下邮件领取失败: {'; '.join(fail_messages)}", 
+                messages.WARNING
+            )
+
