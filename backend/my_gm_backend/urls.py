@@ -16,8 +16,16 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
+    # Admin 后台
     path("admin/", admin.site.urls),
+    
+    # ========== API 路由 ==========
+    path("api/", include("players.urls")),   # 玩家 API: /api/players/
+    path("api/", include("mails.urls")),     # 邮件 API: /api/mails/
+    path("api/", include("notices.urls")),   # 公告 API: /api/notices/
+    path("api/", include("cdks.urls")),      # CDK API:  /api/cdks/
 ]
+
