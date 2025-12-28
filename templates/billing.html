@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    
+    <div class="col-lg-8">
+        <div class="row g-4">
+            
+            <div class="col-xl-6 mb-xl-0">
+                <div class="card bg-transparent border-0 shadow-none h-100" style="min-height: 220px;">
+                    <div class="card-body card-billing-master p-4 position-relative overflow-hidden d-flex flex-column justify-content-between h-100"
+                         style="background: linear-gradient(135deg, rgba(45, 53, 160, 0.9) 0%, rgba(128, 90, 213, 0.9) 100%), url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/vision-ui-dashboard-pro/assets/img/billing-background.png'); background-size: cover; background-blend-mode: overlay; border-radius: 20px;">
+
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.4) 19.41%, rgba(10, 14, 35, 0.1) 76.65%); z-index: 0;"></div>
+
+                        <div class="position-relative z-1 d-flex flex-column justify-content-between h-100">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="text-white mb-0 fw-bold fst-italic" style="letter-spacing: 1px;">Vision UI</h6>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-white opacity-50" style="width: 35px; height: 35px;"></div>
+                                    <div class="rounded-circle bg-white opacity-50" style="width: 35px; height: 35px; margin-left: -15px;"></div>
+                                </div>
+                            </div>
+                            <h4 class="text-white mt-4 mb-4 fw-bold text-center" style="letter-spacing: 3px; font-size: 24px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                7812&nbsp;&nbsp;2139&nbsp;&nbsp;0823&nbsp;&nbsp;XXXX
+                            </h4>
+                            <div class="d-flex gap-5">
+                                <div>
+                                    <div class="text-white opacity-75 text-uppercase mb-1" style="font-size: 10px; letter-spacing: 1px;">Valid Thru</div>
+                                    <div class="text-white fw-bold fs-6">05/24</div>
+                                </div>
+                                <div>
+                                    <div class="text-white opacity-75 text-uppercase mb-1" style="font-size: 10px; letter-spacing: 1px;">CVV</div>
+                                    <div class="text-white fw-bold fs-6">09X</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6">
+                <div class="glass-card h-100 p-3 d-flex flex-column justify-content-center text-center">
+                    <div class="p-2">
+                        <div class="icon-box-blue mx-auto mb-3" style="width: 64px; height: 64px; border-radius: 20px;">
+                            <i class="ph-fill ph-wallet fs-2"></i>
+                        </div>
+                        <h5 class="text-white fw-bold mb-1">信用余额</h5>
+                        <h2 class="text-white fw-bold mb-0">¥25,215</h2>
+                        <p class="text-secondary small mt-2 mb-0">可用额度充足</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mt-4">
+                <div class="glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="text-white fw-bold mb-0">支付方式</h6>
+                        <button class="btn btn-primary btn-sm px-3 fw-bold" style="font-size: 10px; background-color: #0075ff !important;">+ 添加新卡</button>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="adaptive-payment-card rounded-3 p-3 d-flex align-items-center justify-content-between h-100 payment-card-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="d-flex align-items-center justify-content-center bg-transparent" style="width: 24px;">
+                                         <i class="ph-fill ph-credit-card text-white fs-4"></i>
+                                    </div>
+                                    <span class="text-white fw-bold" style="font-size: 13px;">**** **** **** 7852</span>
+                                </div>
+                                <button class="btn btn-sm p-0 btn-link-adaptive"><i class="ph-fill ph-pencil-simple"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="adaptive-payment-card rounded-3 p-3 d-flex align-items-center justify-content-between h-100 payment-card-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="d-flex align-items-center justify-content-center bg-transparent" style="width: 24px;">
+                                         <i class="ph-fill ph-paypal-logo text-white fs-4"></i>
+                                    </div>
+                                    <span class="text-white fw-bold" style="font-size: 13px;">paypal@vision-ui.com</span>
+                                </div>
+                                <button class="btn btn-sm p-0 btn-link-adaptive"><i class="ph-fill ph-pencil-simple"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="glass-card h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h6 class="text-white fw-bold mb-0">发票记录</h6>
+                <button class="btn btn-outline-white btn-sm px-3 text-white fw-bold border-primary text-primary" style="font-size: 10px;">查看全部</button>
+            </div>
+            <div class="d-flex flex-column gap-4">
+                <div class="d-flex justify-content-between align-items-center"><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">2024年 3月 01日</span><span class="text-secondary" style="font-size: 11px;">#MS-415646</span></div><div class="d-flex align-items-center gap-3"><span class="text-secondary small">¥180</span><div class="d-flex align-items-center gap-1 text-white fw-bold" style="font-size: 11px;"><i class="ph-fill ph-file-pdf fs-6"></i> PDF</div></div></div>
+                <div class="d-flex justify-content-between align-items-center"><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">2024年 2月 10日</span><span class="text-secondary" style="font-size: 11px;">#RV-126749</span></div><div class="d-flex align-items-center gap-3"><span class="text-secondary small">¥250</span><div class="d-flex align-items-center gap-1 text-white fw-bold" style="font-size: 11px;"><i class="ph-fill ph-file-pdf fs-6"></i> PDF</div></div></div>
+                <div class="d-flex justify-content-between align-items-center"><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">2023年 4月 05日</span><span class="text-secondary" style="font-size: 11px;">#FB-212562</span></div><div class="d-flex align-items-center gap-3"><span class="text-secondary small">¥560</span><div class="d-flex align-items-center gap-1 text-white fw-bold" style="font-size: 11px;"><i class="ph-fill ph-file-pdf fs-6"></i> PDF</div></div></div>
+                <div class="d-flex justify-content-between align-items-center"><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">2023年 6月 25日</span><span class="text-secondary" style="font-size: 11px;">#QW-103578</span></div><div class="d-flex align-items-center gap-3"><span class="text-secondary small">¥120</span><div class="d-flex align-items-center gap-1 text-white fw-bold" style="font-size: 11px;"><i class="ph-fill ph-file-pdf fs-6"></i> PDF</div></div></div>
+                <div class="d-flex justify-content-between align-items-center"><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">2023年 3月 01日</span><span class="text-secondary" style="font-size: 11px;">#AR-803481</span></div><div class="d-flex align-items-center gap-3"><span class="text-secondary small">¥300</span><div class="d-flex align-items-center gap-1 text-white fw-bold" style="font-size: 11px;"><i class="ph-fill ph-file-pdf fs-6"></i> PDF</div></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="glass-card h-100 p-4">
+            <h6 class="text-white fw-bold mb-4">账单信息</h6>
+            <div class="d-flex flex-column gap-3">
+                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.02);">
+                    <div class="d-flex justify-content-between align-items-start mb-2"><h6 class="text-white fw-bold mb-0" style="font-size: 14px;">Oliver Liam</h6><div class="d-flex gap-3"><a href="#" class="text-danger fw-bold text-decoration-none d-flex align-items-center gap-1" style="font-size: 10px;"><i class="ph-fill ph-trash"></i> 删除</a><a href="#" class="text-white fw-bold text-decoration-none d-flex align-items-center gap-1" style="font-size: 10px;"><i class="ph-fill ph-pencil-simple"></i> 编辑</a></div></div>
+                    <div class="d-flex flex-column gap-1 text-secondary" style="font-size: 11px;"><span>公司名称: <span class="text-white fw-bold">Viking Burrito</span></span><span>邮箱地址: <span class="text-white fw-bold">oliver@burrito.com</span></span><span>增值税号: <span class="text-white fw-bold">FRB1235476</span></span></div>
+                </div>
+                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.02);">
+                    <div class="d-flex justify-content-between align-items-start mb-2"><h6 class="text-white fw-bold mb-0" style="font-size: 14px;">Lucas Harper</h6><div class="d-flex gap-3"><a href="#" class="text-danger fw-bold text-decoration-none d-flex align-items-center gap-1" style="font-size: 10px;"><i class="ph-fill ph-trash"></i> 删除</a><a href="#" class="text-white fw-bold text-decoration-none d-flex align-items-center gap-1" style="font-size: 10px;"><i class="ph-fill ph-pencil-simple"></i> 编辑</a></div></div>
+                    <div class="d-flex flex-column gap-1 text-secondary" style="font-size: 11px;"><span>公司名称: <span class="text-white fw-bold">Stone Tech Zone</span></span><span>邮箱地址: <span class="text-white fw-bold">lucas@stone-tech.com</span></span><span>增值税号: <span class="text-white fw-bold">FRB1235476</span></span></div>
+                </div>
+                 <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.02);">
+                    <div class="d-flex justify-content-between align-items-start mb-2"><h6 class="text-white fw-bold mb-0" style="font-size: 14px;">Ethan James</h6><div class="d-flex gap-3"><a href="#" class="text-danger fw-bold text-decoration-none d-flex align-items-center gap-1" style="font-size: 10px;"><i class="ph-fill ph-trash"></i> 删除</a><a href="#" class="text-white fw-bold text-decoration-none d-flex align-items-center gap-1" style="font-size: 10px;"><i class="ph-fill ph-pencil-simple"></i> 编辑</a></div></div>
+                    <div class="d-flex flex-column gap-1 text-secondary" style="font-size: 11px;"><span>公司名称: <span class="text-white fw-bold">Fiber Notion</span></span><span>邮箱地址: <span class="text-white fw-bold">ethan@fiber.com</span></span><span>增值税号: <span class="text-white fw-bold">FRB1235476</span></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="glass-card h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4"><h6 class="text-white fw-bold mb-0">交易记录</h6><div class="text-secondary d-flex align-items-center gap-1" style="font-size: 12px;"><i class="ph-fill ph-calendar-blank"></i> 2024年3月23日 - 30日</div></div>
+            <div class="d-flex flex-column gap-2">
+                <span class="text-secondary fw-bold text-uppercase mb-2" style="font-size: 10px;">最新</span>
+                <div class="d-flex justify-content-between align-items-center mb-3"><div class="d-flex align-items-center gap-3"><div class="rounded-circle border border-danger text-danger d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;"><i class="ph-fill ph-arrow-down"></i></div><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">Netflix</span><span class="text-secondary" style="font-size: 11px;">2024年3月27日, 下午 12:30</span></div></div><span class="text-danger fw-bold" style="font-size: 13px;">- ¥2,500</span></div>
+                <div class="d-flex justify-content-between align-items-center mb-4"><div class="d-flex align-items-center gap-3"><div class="rounded-circle border border-success text-success d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;"><i class="ph-fill ph-arrow-up"></i></div><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">Apple</span><span class="text-secondary" style="font-size: 11px;">2024年3月27日, 下午 12:30</span></div></div><span class="text-success fw-bold" style="font-size: 13px;">+ ¥2,000</span></div>
+                <span class="text-secondary fw-bold text-uppercase mb-2" style="font-size: 10px;">昨天</span>
+                <div class="d-flex justify-content-between align-items-center mb-3"><div class="d-flex align-items-center gap-3"><div class="rounded-circle border border-success text-success d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;"><i class="ph-fill ph-arrow-up"></i></div><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">Stripe</span><span class="text-secondary" style="font-size: 11px;">2024年3月26日, 下午 13:45</span></div></div><span class="text-success fw-bold" style="font-size: 13px;">+ ¥750</span></div>
+                 <div class="d-flex justify-content-between align-items-center mb-3"><div class="d-flex align-items-center gap-3"><div class="rounded-circle border border-success text-success d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;"><i class="ph-fill ph-arrow-up"></i></div><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">HubSpot</span><span class="text-secondary" style="font-size: 11px;">2024年3月26日, 下午 12:30</span></div></div><span class="text-success fw-bold" style="font-size: 13px;">+ ¥1,000</span></div>
+                 <div class="d-flex justify-content-between align-items-center mb-3"><div class="d-flex align-items-center gap-3"><div class="rounded-circle border border-white border-opacity-25 text-white d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;"><i class="ph-fill ph-info"></i></div><div class="d-flex flex-column"><span class="text-white fw-bold" style="font-size: 13px;">Webflow</span><span class="text-secondary" style="font-size: 11px;">2024年3月26日, 下午 05:00</span></div></div><span class="text-white fw-bold" style="font-size: 13px;">处理中</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
