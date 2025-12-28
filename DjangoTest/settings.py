@@ -49,7 +49,7 @@ ROOT_URLCONF = "DjangoTest.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        "DIRS": [BASE_DIR / 'frontend/templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -103,7 +103,7 @@ STATIC_URL = "static/"
 
 # [新增] 配置静态文件查找路径
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'frontend/static',
     # 或者如果你没有手动建立 static 文件夹，可以只留空，但 theme app 会自动处理 CSS
 ]
 
