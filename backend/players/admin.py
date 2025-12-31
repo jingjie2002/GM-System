@@ -1,9 +1,10 @@
 from django.contrib import admin
 from .models import Player
+from audit.mixins import AuditLogMixin
 
 
 @admin.register(Player)
-class PlayerAdmin(admin.ModelAdmin):
+class PlayerAdmin(AuditLogMixin, admin.ModelAdmin):
     """
     玩家模型的 Admin 后台配置
     """

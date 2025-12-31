@@ -56,6 +56,7 @@ class Mail(models.Model):
     # ========== 全服邮件标识 ==========
     is_global = models.BooleanField(
         default=False,
+        db_index=True,  # 过滤全服/私人邮件
         verbose_name='全服邮件'
     )
     
@@ -73,11 +74,13 @@ class Mail(models.Model):
     
     # ========== 邮件状态 ==========
     expires_at = models.DateTimeField(
+        db_index=True,  # 过期查询优化
         verbose_name='过期时间'
     )
     
     is_claimed = models.BooleanField(
         default=False,
+        db_index=True,  # 查询未领取邮件
         verbose_name='已领取'
     )
     
@@ -109,56 +112,59 @@ class Mail(models.Model):
         """
         领取邮件附件 - 核心业务逻辑
         
-        使用 transaction.atomic() 保证数据一致性:
-        - 玩家道具增加 和 邮件状态更新 要么同时成功，要么同时回滚
-        - 防止"金币加了但邮件没标记已领取"的问题
+        使用 transaction.atomic() + select_for_update() 保证:
+        1. 数据一致性: 玩家道具增加 和 邮件状态更新 要么同时成功，要么同时回滚
+        2. 并发安全: 行级锁防止高并发下的重复领取
         
         Returns:
             tuple: (success: bool, message: str)
                 - success: 是否领取成功
                 - message: 结果描述信息
         """
-        # ===== 1. 验证：全服邮件暂不支持 =====
+        # ===== 1. 快速验证：全服邮件暂不支持 (无需加锁) =====
         if self.is_global:
             return False, "全服邮件需单独处理，暂不支持批量领取"
         
-        # ===== 2. 验证：必须有接收者 =====
+        # ===== 2. 快速验证：必须有接收者 (无需加锁) =====
         if not self.receiver:
             return False, "邮件没有指定接收者"
         
-        # ===== 3. 验证：是否已领取 =====
-        if self.is_claimed:
-            return False, "邮件已被领取"
-        
-        # ===== 4. 验证：是否已过期 =====
-        if self.expires_at <= timezone.now():
-            return False, "邮件已过期"
-        
-        # ===== 5. 原子事务：领取道具 =====
+        # ===== 3. 原子事务 + 行级锁：领取道具 =====
         # transaction.atomic() 确保以下操作要么全部成功，要么全部回滚
         with transaction.atomic():
-            player = self.receiver
+            # ⭐ 使用 select_for_update() 锁定邮件行，防止并发重复领取
+            mail = Mail.objects.select_for_update().get(pk=self.pk)
+            
+            # 在锁内再次检查状态（悲观检查）
+            if mail.is_claimed:
+                return False, "邮件已被领取"
+            
+            if mail.expires_at <= timezone.now():
+                return False, "邮件已过期"
+            
+            # 获取玩家并加锁（防止并发修改玩家资产）
+            player = Player.objects.select_for_update().get(pk=mail.receiver_id)
             item_name = None
             
             # 根据 item_id 分发道具
-            if self.item_id == 1:  # 金币
-                player.gold += self.item_count
-                player.save(update_fields=['gold'])  # 只更新 gold 字段，效率更高
-                item_name = f"金币 x{self.item_count}"
+            if mail.item_id == 1:  # 金币
+                player.gold += mail.item_count
+                player.save(update_fields=['gold'])
+                item_name = f"金币 x{mail.item_count}"
                 
-            elif self.item_id == 2:  # 钻石
-                player.diamond += self.item_count
+            elif mail.item_id == 2:  # 钻石
+                player.diamond += mail.item_count
                 player.save(update_fields=['diamond'])
-                item_name = f"钻石 x{self.item_count}"
+                item_name = f"钻石 x{mail.item_count}"
                 
-            elif self.item_id is not None:
+            elif mail.item_id is not None:
                 # 其他道具类型暂未实现，记录日志但不报错
-                logger.warning(f"[邮件领取] 未实现的道具类型: item_id={self.item_id}, mail_id={self.id}")
-                item_name = f"未知道具(ID:{self.item_id}) x{self.item_count}"
+                logger.warning(f"[邮件领取] 未实现的道具类型: item_id={mail.item_id}, mail_id={mail.id}")
+                item_name = f"未知道具(ID:{mail.item_id}) x{mail.item_count}"
             
             # 标记邮件为已领取
-            self.is_claimed = True
-            self.save(update_fields=['is_claimed'])
+            mail.is_claimed = True
+            mail.save(update_fields=['is_claimed'])
         
         # 构建成功消息
         if item_name:

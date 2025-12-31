@@ -11,19 +11,27 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 加载 .env 环境变量文件
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-3gyv&b^+4a(6-nglro!#+3aut6h3j)l#(28(on^!t_*rkr18ro"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-3gyv&b^+4a(6-nglro!#+3aut6h3j)l#(28(on^!t_*rkr18ro"  # 开发默认值
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
 
 ALLOWED_HOSTS = ["*"]  # 开发环境允许所有主机访问
 
@@ -40,12 +48,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # ===== 第三方应用 =====
-    "rest_framework",       # Django REST Framework - 构建 API
-    "corsheaders",          # 跨域支持
+    "rest_framework",               # Django REST Framework - 构建 API
+    "rest_framework_simplejwt",     # JWT 身份验证
+    "corsheaders",                  # 跨域支持
     # ===== 自定义应用 =====
     "players",              # 玩家管理模块
     "mails",                # 邮件补偿模块
     "notices",              # 全服公告模块
+    "cdks",                 # 礼包码系统
+    "audit",                # 审计日志
 ]
 
 # ============================================
@@ -89,12 +100,12 @@ WSGI_APPLICATION = "my_gm_backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",  # 使用 PostgreSQL
-        "NAME": "gm_system",        # 数据库名（需要先在 PostgreSQL 中创建）
-        "USER": "postgres",         # 用户名
-        "PASSWORD": "123456",       # 密码
-        "HOST": "localhost",        # Docker 映射到本地
-        "PORT": "5432",             # PostgreSQL 默认端口
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "gm_system"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "123456"),  # 生产环境必须从环境变量读取
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -104,10 +115,12 @@ DATABASES = {
 # ============================================
 
 # 开发环境：允许所有来源（生产环境请改为具体域名）
-CORS_ALLOW_ALL_ORIGINS = True
-
-# 如果需要携带 Cookie，取消下面注释：
-# CORS_ALLOW_CREDENTIALS = True
+_cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
+if _cors_origins:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _cors_origins.split(",")]
+else:
+    CORS_ALLOW_ALL_ORIGINS = True  # 开发默认
 
 
 # ============================================
@@ -115,12 +128,34 @@ CORS_ALLOW_ALL_ORIGINS = True
 # ============================================
 
 REST_FRAMEWORK = {
+    # 默认认证方式: JWT
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    # 默认权限: 必须登录 (白名单接口单独设置 AllowAny)
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",  # 开发阶段允许所有请求
+        "rest_framework.permissions.IsAuthenticated",
     ],
+    # 渲染器: 统一响应格式
     "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
+        "utils.renderers.UnifiedResponseRenderer",  # 统一响应格式
+        "rest_framework.renderers.BrowsableAPIRenderer",  # 保留 DRF 浏览界面
     ],
+    # 全局异常处理器
+    "EXCEPTION_HANDLER": "utils.exception_handler.custom_exception_handler",
+}
+
+# ============================================
+# 🔐 JWT 配置
+# ============================================
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),   # Access Token 有效期: 24小时
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),    # Refresh Token 有效期: 7天
+    "ROTATE_REFRESH_TOKENS": True,                  # 刷新时轮换 Refresh Token
+    "BLACKLIST_AFTER_ROTATION": True,               # 轮换后旧 Token 加入黑名单
+    "AUTH_HEADER_TYPES": ("Bearer",),               # Header 格式: Bearer <token>
 }
 
 

@@ -1,9 +1,10 @@
 from django.contrib import admin, messages
 from .models import Mail
+from audit.mixins import AuditLogMixin
 
 
 @admin.register(Mail)
-class MailAdmin(admin.ModelAdmin):
+class MailAdmin(AuditLogMixin, admin.ModelAdmin):
     """
     邮件管理界面
     

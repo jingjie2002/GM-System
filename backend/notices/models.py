@@ -56,16 +56,19 @@ class Notice(models.Model):
         max_length=20,
         choices=Status.choices,
         default=Status.DRAFT,
+        db_index=True,  # 状态过滤优化
         verbose_name='状态'
     )
     
     # ========== 定时功能 ==========
     start_time = models.DateTimeField(
+        db_index=True,  # 时间范围查询优化
         verbose_name='生效时间',
         help_text='公告开始展示的时间'
     )
     
     end_time = models.DateTimeField(
+        db_index=True,  # 时间范围查询优化
         verbose_name='失效时间',
         help_text='公告停止展示的时间'
     )
