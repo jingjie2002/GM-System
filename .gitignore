@@ -1,44 +1,90 @@
-# Python
+# ==========================================
+# GM-System Project .gitignore (Industrial Grade)
+# ==========================================
+
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Virtual Environment
+# --- Virtual Environment (venv) ---
+# 忽略所有常见的虚拟环境文件夹 [cite: 2026-01-01]
 venv/
 ENV/
 env/
 .venv/
+venv.bak/
+.env/
 
-# Environment Variables (CRITICAL - contains secrets)
+# --- Environment Variables (CRITICAL) ---
+# 绝对严禁上传包含真实密码的 .env 文件 [cite: 2026-01-01]
 .env
 .env.local
 .env.*.local
+.flaskenv
 
-# IDE
+# --- IDE / Editor ---
 .idea/
 .vscode/
 *.swp
 *.swo
+*.sublime-project
+*.sublime-workspace
 
-# Django
+# --- Django ---
 *.log
 local_settings.py
 db.sqlite3
+db.sqlite3-journal
 media/
-
-# Static files
+# 静态文件通常在生产环境中由 Nginx 处理
 staticfiles/
+/static/
 
-# OS
+# --- Database (PostgreSQL) ---
+# 注意：我们不忽略代码，但忽略可能产生的本地 dump 文件
+*.sql
+*.dump
+
+# --- OS Specific ---
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Test Coverage
+# --- Test Coverage / Tools ---
 htmlcov/
 .coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 .pytest_cache/
+.mypy_cache/
 
-# Migrations (optional - uncomment if you want to ignore)
+# --- Migrations ---
+# 建议保留迁移记录以保证数据库一致性 [cite: 2026-01-01]
+# 如果你想忽略，可以取消下面两行的注释：
 # */migrations/*.py
 # !*/migrations/__init__.py
