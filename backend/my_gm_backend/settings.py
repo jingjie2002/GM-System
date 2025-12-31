@@ -11,19 +11,27 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# 加载 .env 环境变量文件
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-3gyv&b^+4a(6-nglro!#+3aut6h3j)l#(28(on^!t_*rkr18ro"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-3gyv&b^+4a(6-nglro!#+3aut6h3j)l#(28(on^!t_*rkr18ro"  # 开发默认值
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
 
 ALLOWED_HOSTS = ["*"]  # 开发环境允许所有主机访问
 
@@ -92,12 +100,12 @@ WSGI_APPLICATION = "my_gm_backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",  # 使用 PostgreSQL
-        "NAME": "gm_system",        # 数据库名（需要先在 PostgreSQL 中创建）
-        "USER": "postgres",         # 用户名
-        "PASSWORD": "123456",       # 密码
-        "HOST": "localhost",        # Docker 映射到本地
-        "PORT": "5432",             # PostgreSQL 默认端口
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "gm_system"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "123456"),  # 生产环境必须从环境变量读取
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -107,10 +115,12 @@ DATABASES = {
 # ============================================
 
 # 开发环境：允许所有来源（生产环境请改为具体域名）
-CORS_ALLOW_ALL_ORIGINS = True
-
-# 如果需要携带 Cookie，取消下面注释：
-# CORS_ALLOW_CREDENTIALS = True
+_cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
+if _cors_origins:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _cors_origins.split(",")]
+else:
+    CORS_ALLOW_ALL_ORIGINS = True  # 开发默认
 
 
 # ============================================

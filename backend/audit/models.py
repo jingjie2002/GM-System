@@ -18,6 +18,7 @@ class AuditLog(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='audit_logs',
+        db_index=True,  # 按管理员过滤优化
         verbose_name='操作管理员'
     )
     

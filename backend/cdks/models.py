@@ -22,6 +22,7 @@ class CDK(models.Model):
     code = models.CharField(
         max_length=50,
         unique=True,
+        db_index=True,  # 兑换码查找优化
         verbose_name='兑换码',
         help_text='唯一兑换码，如 KURO666'
     )
@@ -52,6 +53,7 @@ class CDK(models.Model):
     
     # ========== 有效期 ==========
     expires_at = models.DateTimeField(
+        db_index=True,  # 有效期查询优化
         verbose_name='过期时间'
     )
     
@@ -206,6 +208,7 @@ class CDKLog(models.Model):
         Player,
         on_delete=models.CASCADE,
         related_name='cdk_logs',
+        db_index=True,  # 玩家兑换记录查询优化
         verbose_name='玩家'
     )
     

@@ -23,6 +23,7 @@ class Player(models.Model):
     # 基础信息
     nickname = models.CharField(
         max_length=50,
+        db_index=True,  # 搜索优化
         verbose_name='昵称'
     )
     
@@ -47,12 +48,14 @@ class Player(models.Model):
         max_length=10,
         choices=Status.choices,
         default=Status.NORMAL,
+        db_index=True,  # 过滤优化
         verbose_name='账号状态'
     )
     
     # 时间戳
     created_at = models.DateTimeField(
         auto_now_add=True,
+        db_index=True,  # 排序优化
         verbose_name='注册时间'
     )
     
