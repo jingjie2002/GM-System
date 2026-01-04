@@ -1,0 +1,72 @@
+Index: GM-System
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GM-System b/GM-System
+deleted file mode 100644
+--- a/GM-System	(revision 2e710c0b17639b00ab1dedb4953d7f5c21c36a3c)
++++ /dev/null	(revision 2e710c0b17639b00ab1dedb4953d7f5c21c36a3c)
+@@ -1,6 +0,0 @@
+-tree b3e03fce2bf430fc262656b55b97da5e628c3e61
+-parent ed94a2c3fb29ca8d8eb949a62ed77b58de765369
+-author jingjie2002 <2636832425@qq.com> 1766890956 +0800
+-committer jingjie2002 <2636832425@qq.com> 1766890956 +0800
+-
+-feat: 实现全服公告模块，支持定时发布与优先级排序
+Index: .idea/DjangoTest.iml
+===================================================================
+diff --git a/.idea/DjangoTest.iml b/.idea/DjangoTest.iml
+--- a/.idea/DjangoTest.iml	(revision 2e710c0b17639b00ab1dedb4953d7f5c21c36a3c)
++++ b/.idea/DjangoTest.iml	(date 1767377112458)
+@@ -4,9 +4,9 @@
+     <facet type="django" name="Django">
+       <configuration>
+         <option name="rootFolder" value="$MODULE_DIR$" />
+-        <option name="settingsModule" value="DjangoTest/settings.py" />
+-        <option name="manageScript" value="$MODULE_DIR$/manage.py" />
+-        <option name="environment" value="&lt;map/&gt;" />
++        <option name="settingsModule" value="backend/manage.py" />
++        <option name="manageScript" value="backend/manage.py" />
++        <option name="environment" value="&lt;map&gt;&#10;  &lt;entry&gt;&#10;    &lt;string&gt;DJANGO_SETTINGS_MODULE &lt;/string&gt;&#10;    &lt;string&gt; my_gm_backend.settings&lt;/string&gt;&#10;  &lt;/entry&gt;&#10;&lt;/map&gt;" />
+         <option name="doNotUseTestRunner" value="false" />
+         <option name="trackFilePattern" value="migrations" />
+       </configuration>
+@@ -14,7 +14,7 @@
+   </component>
+   <component name="NewModuleRootManager">
+     <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="jdk" jdkName="vs1" jdkType="Python SDK" />
++    <orderEntry type="jdk" jdkName="E:\miniconda3\envs\vs1" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+     <orderEntry type="library" name="@phosphor-icons" level="application" />
+     <orderEntry type="library" name="apexcharts" level="application" />
+Index: .idea/misc.xml
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 2e710c0b17639b00ab1dedb4953d7f5c21c36a3c)
++++ b/.idea/misc.xml	(date 1767369693690)
+@@ -3,5 +3,5 @@
+   <component name="Black">
+     <option name="sdkName" value="vs1" />
+   </component>
+-  <component name="ProjectRootManager" version="2" project-jdk-name="vs1" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="E:\miniconda3\envs\vs1" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
+Index: GM-System
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GM-System b/GM-System
+deleted file mode 100644
+--- a/GM-System	(revision 2e710c0b17639b00ab1dedb4953d7f5c21c36a3c)
++++ /dev/null	(revision 2e710c0b17639b00ab1dedb4953d7f5c21c36a3c)
+@@ -1,6 +0,0 @@
+-tree b3e03fce2bf430fc262656b55b97da5e628c3e61
+-parent ed94a2c3fb29ca8d8eb949a62ed77b58de765369
+-author jingjie2002 <2636832425@qq.com> 1766890956 +0800
+-committer jingjie2002 <2636832425@qq.com> 1766890956 +0800
+-
+-feat: 实现全服公告模块，支持定时发布与优先级排序
