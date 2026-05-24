@@ -1,115 +1,133 @@
-# 🛡️ GM-System 工业级后端架构白皮书 (v1.0)
+# GM-System
 
-> **发布日期**: 2026-01-01  
-> **状态**: Release Candidate (1.0)  
-> **架构师**: Lead Developer
+GM-System 是一个基于 Django 和 Django REST Framework 的游戏后台管理服务示例。项目包含玩家管理、邮件发放、公告管理、CDK 兑换和审计日志等模块，使用 PostgreSQL 保存业务数据。
 
----
+该项目主要演示后台服务中常见的管理接口、事务处理、操作审计和统一响应格式。
 
-## 🏗️ 1. 项目定位 (Positioning)
+## 功能
 
-**GM-System** 是一套专为高并发游戏场景设计的后端管理系统。区别于传统的 CRUD 后台，本系统将 **资产安全**、**事务原子性** 和 **操作审计** 视为核心生命线。它通过 Django 5.0 的稳健生态结合 PostgreSQL 的强一致性特性，为游戏运营提供了一道坚不可摧的安全屏障。
+- 玩家管理：玩家基础信息、等级、金币、钻石和账号状态。
+- 邮件管理：单人邮件、全服邮件字段、附件领取状态和过期时间。
+- CDK 管理：兑换码、有效期、使用次数和兑换记录。
+- 公告管理：公告内容和生效时间。
+- 审计日志：记录后台对象的创建、修改和删除。
+- JWT 鉴权：使用 access token 和 refresh token。
+- 统一响应格式：通过 DRF renderer 输出统一响应结构。
+- 全局异常处理：统一返回错误结构。
+- PostgreSQL 持久化。
 
----
+## 技术栈
 
-## ⚡ 2. 硬核技术点 (Core Mechanics)
+- Python
+- Django
+- Django REST Framework
+- djangorestframework-simplejwt
+- django-cors-headers
+- PostgreSQL
+- python-dotenv
 
-### 2.1 资产并发安全：行级锁 (Row-Level Locking)
+## 目录结构
 
-在高并发的游戏业务中（如全服邮件领取、限时礼包抢兑），"超发"是绝对不可接受的灾难。本系统摒弃了不可靠的乐观锁，采用了 **悲观锁 (Pessimistic Locking)** 方案。
-
-> [!IMPORTANT]
-> **技术决策**: 使用 `select_for_update()` 配合 `transaction.atomic()` 实现强一致性。
-
-#### 场景 A: 邮件附件领取 (Mails)
-在 `mails/models.py` 中，我们实施了双重锁定策略：
-1.  **锁定邮件行**: 防止同一个邮件被并发请求重复标记为 `is_claimed`。
-2.  **锁定玩家行**: 防止在增加金币时发生 `Lost Update` 问题。
-
-```python
-with transaction.atomic():
-    # 🔒 锁定邮件对象，阻塞其他并发请求
-    mail = Mail.objects.select_for_update().get(pk=pk)
-    if mail.is_claimed:
-        raise ValueError("Double Claim Detected")
-        
-    # 🔒 锁定玩家资产
-    player = Player.objects.select_for_update().get(pk=mail.receiver_id)
-    player.gold += mail.item_count
-    mail.is_claimed = True
-    mail.save()
+```text
+backend/
+  manage.py
+  my_gm_backend/       Django 项目配置
+  players/             玩家模块
+  mails/               邮件模块
+  notices/             公告模块
+  cdks/                CDK 模块
+  audit/               审计日志模块
+  utils/               统一响应和异常处理
+Frontend_API_Guide.md  前端接口说明
+README.md
 ```
 
-#### 场景 B: CDK 礼包抢兑 (CDKs)
-在 `cdks/models.py` 中，针对限量礼包（如 `max_uses=10`），我们利用行级锁保证计数的绝对准确，杜绝 "第 11 个人兑换成功" 的情况。
+## 本地运行
 
----
+### 1. 准备环境
 
-## 👁️ 3. 安全审计机制 (Security Audit)
+建议使用 Python 3.12+ 和 PostgreSQL。
 
-为了满足合规性要求及内部风控，我们设计了全量操作追溯系统。
-
-### AuditLogMixin
-通过 AOP (面向切面) 思想，在 `audit/mixins.py` 中重写了 Django Admin 的 `save_model` 和 `delete_model` 生命周期钩子。
-
-| 拦截维度 | 说明 |
-|:---|:---|
-| **Actor** | 记录操作者 (Admin User) |
-| **Action** | 创建 (Create) / 修改 (Update) / 删除 (Delete) |
-| **Target** | 被操作对象 (如: 玩家 "User001") |
-| **Detail** | 自动 diff 变更字段 (如: `gold: 100 -> 9999`) |
-| **Context** | 记录客户端 IP (支持 X-Forwarded-For) |
-
----
-
-## 🔌 4. API 规范 (API Standards)
-
-为了降低前端联调成本，我们实现了更加 Pythonic 的统一响应流。
-
-### 4.1 统一异常拦截 (Global Exception Handler)
-位于 `utils/exception_handler.py`。即便是 `500 Server Error`，也会被捕获并转化为标准 JSON，前端无需处理 HTTP 状态码层面的崩溃。
-
-### 4.2 成功响应包装 (Unified Renderer)
-位于 `utils/renderers.py`。所有 DRF 的 Response 都会被自动包裹：
-
-```json
-{
-    "code": 200,
-    "message": "success",
-    "data": {
-        "id": "uuid",
-        "nickname": "ProGamer"
-    }
-}
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\activate
 ```
 
----
+当前仓库没有固定的 `requirements.txt`，可以按项目使用到的包安装：
 
-## 🛠️ 5. 工程质量 (Engineering Quality)
+```powershell
+pip install django djangorestframework djangorestframework-simplejwt django-cors-headers python-dotenv psycopg2-binary
+```
 
-我们拒绝 "能跑就行" 的代码，追求工业级的交付标准。
+### 2. 配置数据库
 
--   **🔐 环境隔离**: 使用 `.env` 管理 `SECRET_KEY`、`DB_PASSWORD` 等敏感信息，严禁硬编码。
--   **🎟️ 双令牌机制**: 采用 JWT (`Access` + `Refresh`) 架构，兼顾安全性与用户体验。
--   **🧪 自动化测试**: 核心业务（邮件领取、CDK 兑换）覆盖了 100% 的边界测试用例（如过期、重复、并发）。
--   **🐳 Docker 化**: 提供标准容器环境，消除 "我本地是好的" 这类环境差异问题。
+项目会从环境变量或 `.env` 读取数据库配置：
 
----
+```text
+DB_NAME=gm_system
+DB_USER=postgres
+DB_PASSWORD=123456
+DB_HOST=localhost
+DB_PORT=5432
+SECRET_KEY=change-me
+DEBUG=True
+```
 
-## 🔮 6. 未来路线 (Roadmap v2.0)
+`.env` 文件放在 `backend/` 目录下。
 
-> [!NOTE]
-> 随着用户量级突破 10w+，我们将引入以下架构升级：
+### 3. 初始化数据库
 
-1.  **Redis 缓存层**:
-    -   缓存热点公告 (Notices) 和配置表，减轻 DB 压力。
-    -   实现分布式锁 (Redlock) 替代 DB 行锁，提升吞吐量。
+```powershell
+python manage.py migrate
+python manage.py createsuperuser
+```
 
-2.  **Celery 异步任务**:
-    -   **邮件群发**: 将全服邮件发送逻辑从 Request-Response 循环中剥离，通过 MQ 异步处理。
-    -   **日志归档**: 定时将审计日志转存至数仓 (Data Warehouse)。
+### 4. 启动服务
 
----
+```powershell
+python manage.py runserver
+```
 
-**GM-System Backend Team**
-*Building for Stability, Designing for Scale.*
+默认访问地址：
+
+```text
+http://127.0.0.1:8000/
+```
+
+## 接口模块
+
+项目路由按 Django app 拆分：
+
+- `players/`：玩家管理接口。
+- `mails/`：邮件管理与领取接口。
+- `notices/`：公告接口。
+- `cdks/`：兑换码接口。
+- `audit/`：审计日志接口。
+
+更多接口说明见：
+
+```text
+Frontend_API_Guide.md
+```
+
+## 事务与状态控制
+
+项目中部分业务使用 `transaction.atomic()` 和 `select_for_update()` 控制并发写入：
+
+- 邮件附件领取：锁定邮件和玩家记录，避免重复领取。
+- CDK 兑换：锁定兑换码记录，检查剩余次数和玩家兑换记录。
+
+CDK 兑换记录使用联合唯一约束，保证同一玩家不能重复兑换同一个 CDK。
+
+## 当前限制
+
+- 当前仓库只包含后端服务，没有完整前端工程。
+- 默认配置面向本地开发，生产环境需要修改 `SECRET_KEY`、数据库密码、`DEBUG` 和 `ALLOWED_HOSTS`。
+- 没有提供 Docker Compose 或自动化部署脚本。
+- 没有固定依赖锁文件，首次运行需要根据项目模块安装依赖。
+- 邮件全服批量领取逻辑仍是预留能力。
+
+## License
+
+未指定。
